@@ -5,6 +5,6 @@
 ###****************************************************************************
 
 
-###     Repository for the Week 2 Assignment of Introduction 
-###     to Embedded Systems Software and Development Environments Course.
+###     Repository for the Final Assignment of Introduction to Embedded
+###     Systems Software and Development Environments Course.
 
