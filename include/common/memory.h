@@ -1,13 +1,3 @@
-/******************************************************************************
- * Copyright (C) 2017 by Alex Fosdick - University of Colorado
- *
- * Redistribution, modification or use of this software in source or binary
- * forms is permitted as long as the files maintain this copyright. Users are 
- * permitted to modify this and use it to learn about the field of embedded
- * software. Alex Fosdick and the University of Colorado are not liable for any
- * misuse of this material. 
- *
- *****************************************************************************/
 /**
  * @file memory.h
  * @brief Abstraction of memory read and write operations
@@ -21,6 +11,9 @@
  */
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
+
+#include <stdint.h>
+#include <stdlib.h>
 
 /**
  * @brief Sets a value of a data array 
@@ -89,5 +82,89 @@ void set_all(char * ptr, char value, unsigned int size);
  * @return void.
  */
 void clear_all(char * ptr, unsigned int size);
+
+/**
+ * @brief moves chunk of memory from place to another
+ *
+ * it takes two pointers , one source and another is destination
+ * and number of bytes to be moved
+ *
+ * @param src source pointer to the beginning of chunk of memory to be moved 
+ * @param dst destination pointer to move the chunk of memory tp
+ * @param length number of bytes to be moved
+ *
+ * @return pointer to destination (dst)
+ */
+uint8_t * my_memmove(uint8_t * src, uint8_t * dst, size_t length);
+
+/**
+ * @brief takes pointer to chunck of memory and copy it else where
+ *
+ * it simply will be ginven pointer to the beginning of the memory chunk 
+ * and the destination pointer and size of the chunk ,so it will copy the memory 
+ * chunck at that destiantion
+ *
+ * @param src source pointer of data to be copied
+ * @param dst destination pointer of where to copy data
+ * @param length number of bytes to be copied
+ *
+ * @return pointer to destination
+ */
+uint8_t * my_memcopy(uint8_t * src, uint8_t * dst, size_t length);
+
+/**
+ * @brief sets a block of memory to a certain value
+ *
+ *
+ * @param src source pointer of data to be set
+ * @param length number of bytes to be set
+ * @param value is the vlaue that memory will be set to
+ *
+ * @return pointer to source 
+ */
+uint8_t * my_memset(uint8_t * src, size_t length, uint8_t value);
+
+/**
+ * @brief set a chunk of memory to zero
+ *
+ *
+ * @param  src source pointer of data to be set
+ * @param length number of bytes to be set
+ *
+ * @return  pointer to source 
+ */
+uint8_t * my_memzero(uint8_t * src, size_t length);
+
+/**
+ * @brief reverse the order of number of bytes
+ *
+ *
+ * @param  src source pointer of data to be reversed
+ * @param length number of bytes to be reversed
+ *
+ * @return  pointer to source 
+ */   
+uint8_t * my_reverse(uint8_t * src, size_t length);
+
+/**
+ * @brief take number of words to allocate ni dynamic memory
+ *
+ * it returns pointer to the number of words in case of successful allocation and NULL otherwise
+ *
+ * @param  length number of bytes to be allocated
+ *
+ * @return pointer to memory if successful , or NULL if not successful
+ */
+int32_t * reserve_words(size_t length);
+
+/**
+ * @brief free a dynamic memory allocation
+ *
+ *
+ * @param src pointer to the source of memory to be freed
+ *
+ * @return void.
+ */ 
+void free_words(uint32_t * src);
 
 #endif /* __MEMORY_H__ */

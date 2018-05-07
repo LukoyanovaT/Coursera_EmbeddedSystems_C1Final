@@ -17,6 +17,8 @@
  *
  */
 
+  #include "platform.h"
+
 /**
  *  @brief   Prints the statistics 
  *

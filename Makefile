@@ -5,35 +5,48 @@
 #*******************************************************************************
 #
 #*******************************************************************************
-# Makefile for platform  HOST and MSP432>
+# Makefile for platform  HOST and MSP432
 # 
-#  Use: make [TARGET] [PLATFORM-OVERRIDES]
+#  Use: make [TARGET_NAME] [PLATFORM] [COURSE] [VERBOSE=yes]
 # 
+#    PLATFORM     The target platform ( HOST(default) , MSP432 )
+#    TARGET_NAME  The name .out file (default c1final.out)
+#    COURSE       The assignment selection 
+#                 COURSE1(default) - final assignment
+#                 C1M1 - week 1 assignment
+#                 C1M2 - week 2 assignment
+#    VERBOSE=yes  Enable debug printing
+#
 #  Build Targets:
 #    <FILE>.i     Build preprocessed file
 #    <FILE>.asm   Build assembly file
 #    <FILE>.o     Build object file 
 #    compile-all  Compile all object files
-#    build        Compile and link project.out
+#    build        Compile and link c1final.out
 #    clean        Remove all generated files
 # 
-#  
 #*******************************************************************************
 
 include sources.mk
 
 #Target name
-TARGET_NAME=c1m2
+TARGET_NAME=c1final
 #output file name
 TARGET=$(TARGET_NAME).out
 
 # Platform Overrides
 PLATFORM = HOST
+COURSE   = COURSE1 
 
 DFLAGS = -D$(PLATFORM)
+DFLAGS += -D$(COURSE)
+
+ifdef VERBOSE
+  DFLAGS += -DVERBOSE
+endif
 
 # Architectures Specific Flags
-LINKER_FILE = ../msp432p401r.lds
+LINKER_FILE = msp432p401r.lds
 CPU = cortex-m4
 THUMB = thumb
 ARCH = armv7e-m
@@ -47,39 +60,41 @@ LD = ld
 LDFLAGS = -Wl,-Map=$(TARGET_NAME).map
 
 #general compiler flags for both platforms
-CFLAGS = -Wall -Werror -g -O0 -std=c99 $(DFLAGS)
+CFLAGS  = -Wall -Werror -g -O0 -std=c99
+CFLAGS += $(DFLAGS) $(INCLUDES)
 
 #object files         
 OBJS = $(SOURCES:.c=.o)
 
 #platform dependent changes
-ifeq ($(PLATFORM),HOST)
-  CC = gcc
-else
+ifeq ($(PLATFORM),MSP432)
   CC = arm-none-eabi-gcc
-  CFLAGS += -mcpu=$(CPU) -m$(THUMB) --specs=$(SPECS) -mfloat-abi=$(FLOAT) -mfpu=$(FPU) -march=$(ARCH)
+  CFLAGS += -mcpu=$(CPU) -m$(THUMB) --specs=$(SPECS) -mfloat-abi=$(FLOAT) 
+  CFLAGS += -mfpu=$(FPU) -march=$(ARCH)
   LD = arm-none-eabi-ld
   LDFLAGS += -T$(LINKER_FILE)
+else #($(PLATFORM),HOST)
+CC = gcc
 endif
 
 #make build target
 .PHONY: build
 build: $(TARGET)
 $(TARGET) : $(OBJS)
-	$(CC) $(OBJS) $(CFLAGS) $(INCLUDES) $(LDFLAGS) -o $@
+	$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -o $@
 	size $(TARGET)
 
 #building object files
 %.o: %.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@  
+	$(CC) $(CFLAGS) -c $< -o $@  
 
 #building assembly files
 %.asm: %.c
-	$(CC) $(CFLAGS) $(INCLUDES) -S $< -o $@
+	$(CC) $(CFLAGS) -S $< -o $@
 
 #create preprocessed files
 %.i: %.c
-	$(CC) $(CFLAGS) $(INCLUDES) -E $< -o $@
+	$(CC) $(CFLAGS)  -E $< -o $@
 
 #compile all sources
 .PHONY: compile-all
@@ -89,4 +104,4 @@ compile-all: $(OBJS)
 .PHONY: clean
 clean:
 	@printf "clean project directory ...... \n"
-	@rm -f *.o *.i *.map *.out *.asm *.d *.s
+	@rm -f src/*.o src/*.i *.map *.out src/*.asm src/*.d src/*.s
